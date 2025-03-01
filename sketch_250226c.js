@@ -12,6 +12,7 @@ var dt = 1;
 let obj, phongShader, alpha = 8, reactionDiffusionTexture;
 let feedSlider, kSlider, dtSlider;
 let feedLabel, kLabel, dtLabel;
+let clearButton, addPointsButton;
 
 function setup(){
   createCanvas(400, 400, WEBGL);
@@ -25,20 +26,31 @@ function setup(){
   initReactionDiffusion();
   
   // Crear sliders y etiquetas
-  feedSlider = createSlider(0, 0.1, feed, 0.0001);
+  feedSlider = createSlider(0.002, 0.12, feed, 0.0001);
   feedSlider.position(10, height + 10);
   feedLabel = createDiv(`Feed: ${feed}`);
-  feedLabel.position(160, height + 10);
+  feedLabel.position(200, height + 10);
   
-  kSlider = createSlider(0, 0.1, k, 0.0001);
+  kSlider = createSlider(0.01413, 0.65534, k, 0.00001);
   kSlider.position(10, height + 40);
   kLabel = createDiv(`k: ${k}`);
-  kLabel.position(160, height + 40);
+  kLabel.position(200, height + 40);
   
   dtSlider = createSlider(0.1, 2, dt, 0.1);
   dtSlider.position(10, height + 70);
   dtLabel = createDiv(`dt: ${dt}`);
-  dtLabel.position(160, height + 70);
+  dtLabel.position(200, height + 70);
+  
+  // Crear botones de limpiar y agregar puntos
+  clearButton = createButton('Clear Grid');
+  clearButton.position(10, height + 100);
+  clearButton.mousePressed(initReactionDiffusion  );
+  
+  addPointsButton = createButton('Add Points');
+  addPointsButton.position(100, height + 100);
+  addPointsButton.mousePressed(addPoints);
+  
+  // Llamar a las funciones de limpiar y agregar puntos al inicio
 }
 
 function draw() {
@@ -84,11 +96,23 @@ function initReactionDiffusion() {
       next[x][y] = { a: 1, b: 0 };
     }
   }
+}
+
+function addPoints() {
+  let radius = 2; // Radius of the points to be added
   for (var i = 0; i < 1500; i++) {
     var x = floor(random(reactionDiffusionTexture.width));
     var y = floor(random(reactionDiffusionTexture.height));
-    grid[x][y].a = 0;
-    grid[x][y].b = 5;
+    for (var dx = -radius; dx <= radius; dx++) {
+      for (var dy = -radius; dy <= radius; dy++) {
+        var nx = x + dx;
+        var ny = y + dy;
+        if (nx >= 0 && nx < reactionDiffusionTexture.width && ny >= 0 && ny < reactionDiffusionTexture.height) {
+          grid[nx][ny].a = 0;
+          grid[nx][ny].b = 1;
+        }
+      }
+    }
   }
 }
 
